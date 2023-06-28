@@ -43,18 +43,19 @@ console.log(takeNum('агент 007'));
 console.log(takeNum('а я томат'));
 console.log(takeNum(-1));
 
+const timeTextToNumber = (text) => text.split(':').map((element) => parseInt(element, 10));
+const getTimeInterval = (startTime, endTime) => (endTime[0] - startTime[0]) * 60 + (endTime[1] - startTime[1]);
+
 const validateMeeting = (startWork, endWork, startMeeting, delayMeeting) => {
-  const currentDate = new Date()
-  const [workStartHH, workStartMM] = startWork.split(':');
-  const startWorkDate = new Date(currentDate.setHours(+workStartHH, +workStartMM, 0));
-  const [workEndHH, workEndMM] = endWork.split(':');
-  const endWorkData = new Date(currentDate.setHours(+workEndHH, +workEndMM, 0));
-  const [meetingHH, meetingMM ]= startMeeting.split(':');
-  const meetingDateStart = new Date(currentDate.setHours(+meetingHH, +meetingMM, 0));
-  const meetingDateEnd = new Date(currentDate.setHours(+meetingHH, +meetingMM + delayMeeting, 0));
-
-  return meetingDateStart >= startWorkDate && meetingDateEnd <= endWorkData;
-
+  const startWorkTime = timeTextToNumber(startWork);
+  const endWorkTime = timeTextToNumber(endWork);
+  const startMeetingTime = timeTextToNumber(startMeeting);
+  const workDelay = getTimeInterval(startWorkTime, endWorkTime);
+  const timeForMeeting = getTimeInterval(startMeetingTime, endWorkTime);
+  if (delayMeeting > workDelay || timeForMeeting < delayMeeting || timeForMeeting > workDelay) {
+    return false;
+  }
+  return true;
 };
 
 console.log('validateMeeting()', validateMeeting('08:00', '17:30', '14:00', 90));
